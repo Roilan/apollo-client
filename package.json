@@ -1,6 +1,5 @@
 {
-  "name": "apollo-client-monorepo",
-  "version": "0.0.1",
+  "name": "@roilan/apollo-client-monorepo",
   "private": true,
   "license": "MIT",
   "scripts": {
