@@ -1,5 +1,5 @@
 {
-  "name": "@roilan/apollo-client-monorepo",
+  "name": "@axioscode/apollo-client-monorepo",
   "private": true,
   "license": "MIT",
   "scripts": {
