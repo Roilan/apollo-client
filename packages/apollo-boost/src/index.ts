@@ -75,6 +75,7 @@ const PRESET_CONFIG_KEYS = [
   'resolvers',
   'typeDefs',
   'fragmentMatcher',
+  'linkContext',
 ];
 
 export default class DefaultClient<TCache> extends ApolloClient<TCache> {
