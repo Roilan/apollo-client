@@ -3,9 +3,10 @@ export * from 'apollo-client';
 export * from 'apollo-link';
 export * from 'apollo-cache-inmemory';
 
-import { Operation, ApolloLink, Observable } from 'apollo-link';
+import { Operation, ApolloLink, Observable, GraphQLRequest } from 'apollo-link';
 import { HttpLink, UriFunction } from 'apollo-link-http';
 import { onError, ErrorLink } from 'apollo-link-error';
+import { setContext } from 'apollo-link-context';
 import { ApolloCache } from 'apollo-cache';
 import { InMemoryCache, CacheResolverMap } from 'apollo-cache-inmemory';
 import gql from 'graphql-tag';
@@ -42,6 +43,7 @@ export interface PresetConfig {
   resolvers?: Resolvers | Resolvers[];
   typeDefs?: string | string[] | DocumentNode | DocumentNode[];
   fragmentMatcher?: LocalStateFragmentMatcher;
+  linkContext?: (operation: GraphQLRequest, prevContext: any) => Promise<any> | any;
 }
 
 // Yes, these are the exact same as the `PresetConfig` interface. We're
@@ -102,6 +104,7 @@ export default class DefaultClient<TCache> extends ApolloClient<TCache> {
       resolvers,
       typeDefs,
       fragmentMatcher,
+      linkContext: linkContextFn,
     } = config;
 
     let { cache } = config;
@@ -161,6 +164,8 @@ export default class DefaultClient<TCache> extends ApolloClient<TCache> {
         )
       : false;
 
+    const linkContext = linkContextFn ? setContext(linkContextFn) : false;
+
     const httpLink = new HttpLink({
       uri: uri || '/graphql',
       fetch,
@@ -169,7 +174,7 @@ export default class DefaultClient<TCache> extends ApolloClient<TCache> {
       headers: headers || {},
     });
 
-    const link = ApolloLink.from([errorLink, requestHandler, httpLink].filter(
+    const link = ApolloLink.from([errorLink, linkContext, requestHandler, httpLink].filter(
       x => !!x,
     ) as ApolloLink[]);
 
